@@ -1,0 +1,28 @@
+.editor {
+	display: flex;
+	flex-direction: column;
+	width: 100vw;
+	height: 100vh;
+	.editor-t,
+	.editor-b {
+	}
+	.editor-c {
+		flex: 1;
+		display: flex;
+		.editor-c-l,
+		.editor-c-r {
+		}
+		.editor-c-c {
+			flex: 1;
+		}
+	}
+}
+
+.e-mask {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, .2);
+}
