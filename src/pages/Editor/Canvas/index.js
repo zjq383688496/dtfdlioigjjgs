@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import * as actions from 'actions'
 
 import Selected from './Selected'
+import Draw     from './Draw'
 import Circle   from './Node/Circle'
 import Rect     from './Node/Rect'
 
@@ -70,6 +71,13 @@ class Canvas extends React.Component {
 			/>
 		)
 	}
+	// 创建路径
+	render_pen = node => {
+		let { id } = this.state
+		return (
+			
+		)
+	}
 	// 渲染选中辅助
 	renderSelectedHelp = () => {
 		let { Config }  = this.props,
@@ -94,6 +102,7 @@ class Canvas extends React.Component {
 			{ selectMaskStatus } = this.state
 		let content  = this.renderNode(),
 			selected = this.renderSelectedHelp(),
+
 			style    = { width, height }
 		return (
 			<div className="editor-canvas" onMouseDown={this.cancelSelect}>
@@ -104,6 +113,7 @@ class Canvas extends React.Component {
 						</svg>
 						{ selected }
 					</svg>
+					<Draw />
 				</div>
 				{
 					selectMaskStatus

@@ -32,7 +32,7 @@ export default class helper {
 	}
 	// 初始化坐标
 	initPosition = e => {
-		let { offsetTop, offsetLeft } = this._ref.refs.area,
+		let { top: offsetTop, left: offsetLeft } = getOffset(this._ref.refs.area),
 			{ clientX: initX, clientY: initY } = e
 		return {
 			initX,

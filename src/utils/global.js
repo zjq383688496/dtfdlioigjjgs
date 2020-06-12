@@ -81,5 +81,19 @@ module.exports = Object.assign(window, {
 		let mk = document.querySelectorAll('.help-mask')
 		if (!mk.length) return
 		mk.forEach(m => document.body.removeChild(m))
+	},
+	// 获取元素的位置
+	getOffset(element) {
+		let top  = element.offsetTop,
+			left = element.offsetLeft,
+			cur  = element.offsetParent
+
+		while (cur !== null) {
+			top  += cur.offsetTop
+			left += cur.offsetLeft
+			cur  = cur.offsetParent
+		}
+
+		return { top, left }
 	}
 })
