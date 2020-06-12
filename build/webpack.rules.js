@@ -29,7 +29,11 @@ var dev = [
 		loader: 'style-loader!css-loader?sourceMap=true!less-loader?sourceMap=true'
 	},
 	{
-		test: /\.(jpe?g|png|gif|svg|ttf|woff2?|eot|otf)\??.*$/,
+		test: /\.(jpe?g|png|gif)$/,
+		loader: 'url-loader?name=[path][name]_[hash:8].[ext]&esModule=false'
+	},
+	{
+		test: /\.(svg|ttf|woff2?|eot|otf)\??.*$/,
 		loader: 'url-loader?name=[path][name]_[hash:8].[ext]'
 	}
 ]

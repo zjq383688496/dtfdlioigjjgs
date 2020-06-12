@@ -274,6 +274,6 @@ function resetTransform($CurNode, rotate, cx, cy, x, y) {
 	let transform = ''
 	if (x || y) transform += `translate(${x},${y})`
 	transform += ` rotate(${rotate} ${cx},${cy})`
-	if (!transform) return
+	if (!transform || !$CurNode) return
 	$CurNode.setAttribute('transform', transform)
 }

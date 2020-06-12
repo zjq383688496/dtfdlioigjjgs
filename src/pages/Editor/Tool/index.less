@@ -1,5 +1,31 @@
-.editor-tool {
+@import '../../../assets/less/var.less';
+
+.editor-tools {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width:  39px;
+	height: 100%;
+	border: 1px solid @c-main-dark;
+	background-color: @c-main;
+	color: #fff;
 	a {
-		display: block;
+		display: flex;
+		width:  33px;
+		height: 26px;
+		justify-content: center;
+		align-items: center;
+		border-radius: 4px;
+		font-size: 12px;
+		&:hover,
+		&.s-active {
+			border: 1px solid @c-main-border;
+		}
+		&.s-active {
+			background-color: @c-main-dark;
+		}
+		&:hover {
+			background-color: @c-main-hover;
+		}
 	}
 }

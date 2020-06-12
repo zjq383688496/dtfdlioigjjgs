@@ -2,7 +2,11 @@ const tool = [
 	{
 		key:  'select',
 		name: '选择',
-		icon: ''
+		icon: '2D',
+		activeFun() {
+			let { type } = this.props.Config.Control
+			return type === 'select'
+		}
 	},
 	{
 		key:  'route',
@@ -12,17 +16,21 @@ const tool = [
 	{
 		key:  'rect',
 		name: '矩形',
-		icon: ''
+		icon: 'rect'
 	},
 	{
 		key:  'circle',
 		name: '圆',
-		icon: ''
+		icon: 'circle'
 	},
 	{
-		key:  'pan',
+		key:  'pen',
 		name: '钢笔',
-		icon: ''
+		icon: 'pen',
+		activeFun() {
+			let { type } = this.props.Config.Control
+			return type === 'pen'
+		}
 	},
 	{
 		key:  'store',

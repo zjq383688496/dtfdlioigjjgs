@@ -11,8 +11,10 @@ export default function business(state = initialState, action) {
 		node_id,
 		node_key,
 		node_data,
+		control_type,
 	} = action
 	let {
+		Control,
 		Canvas,
 		CurNode,
 		Nodes,
@@ -36,6 +38,10 @@ export default function business(state = initialState, action) {
 			CurNode = Nodes[node_id] || null
 			// if (!CurNode) return ReduxUpdate()
 			return ReduxUpdate({ CurNode })
+
+		case types.CHANGE_CONTORL_TYPE:
+			Control.type = control_type
+			return ReduxUpdate({ Control })
 
 		default:
 			return ReduxUpdate()

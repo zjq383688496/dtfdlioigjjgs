@@ -2,24 +2,28 @@
 
 import * as types from '../constants'
 
+// 添加节点
 export const addNode = node_key => ({
 	type: types.ADD_NODE,
 	node_key
 })
 
+// 选择节点
 export const selectNode = node_id => ({
 	type: types.SELECT_NODE,
 	node_id
 })
 
+// 更新节点
 export const updateNode = node_data => ({
 	type: types.UPDATE_NODE,
 	node_data
 })
 
-export const nodeConnect = node_connect => ({
-	type: types.NODE_CONTENT,
-	node_connect
+// 切换操作状态
+export const changeControlType = control_type => ({
+	type: types.CHANGE_CONTORL_TYPE,
+	control_type
 })
 
 export const nodeDisconnect = node_disconnect => ({

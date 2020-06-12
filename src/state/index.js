@@ -1,4 +1,8 @@
 module.exports = {
+	// 控制类型
+	Control: {
+		type: 'select'
+	},
 	CurNode:   null,	// 当前节点
 	// 菜单信息
 	Menu: {

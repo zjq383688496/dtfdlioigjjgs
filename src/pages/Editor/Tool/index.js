@@ -17,19 +17,48 @@ class Tool extends React.Component {
 		ctrl && ctrl(key)
 	}
 
+	// 使用选择工具
+	ctrl_select = key => {
+		this.props.actions.changeControlType(key)
+	}
+
+	// 创建矩形
 	ctrl_rect = key => {
 		this.props.actions.addNode(key)
 	}
 	
+	// 创建圆
 	ctrl_circle = key => {
 		this.props.actions.addNode(key)
 	}
 
+	// 使用钢笔工具
+	ctrl_pen = key => {
+		this.props.actions.changeControlType(key)
+	}
+
 	render() {
 		return (
-			<div className="editor-tool">
+			<div className="editor-tools">
 				{
-					tool.map(({ key, name }, i) => <a key={i} title={name} onClick={e => this.ctrlSelect(key)}>{name}</a>)
+					tool.map(({ key, name, icon, activeFun }, i) => {
+						let active = activeFun? activeFun.bind(this)(): false
+						return (
+							<a
+								key={i}
+								className={active? 's-active': ''}
+								title={name}
+								onClick={e => this.ctrlSelect(key)}
+							>
+								{
+									icon
+									?
+									<img src={require(`assets/img/icon/${icon}.png`)} />
+									: name
+								}
+							</a>
+						)
+					})
 				}
 			</div>
 		)

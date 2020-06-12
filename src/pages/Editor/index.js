@@ -9,6 +9,7 @@ import Quick     from './Quick'
 import Canvas    from './Canvas'
 import Attribute from './Attribute'
 
+
 import './index.less'
 
 class Editor extends React.Component {

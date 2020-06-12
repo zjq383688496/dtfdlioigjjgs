@@ -4,7 +4,7 @@ import { Switch, Route } from 'react-router-dom'
 import routes from './routes'
 
 import '@utils'
-import 'assets/common.less'
+import 'assets/less/common.less'
 
 export default class App extends React.Component {
 	constructor(props) {
