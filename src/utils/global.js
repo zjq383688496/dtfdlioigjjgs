@@ -88,7 +88,7 @@ module.exports = Object.assign(window, {
 			left = element.offsetLeft,
 			cur  = element.offsetParent
 
-		while (cur !== null) {
+		while (cur) {
 			top  += cur.offsetTop
 			left += cur.offsetLeft
 			cur  = cur.offsetParent

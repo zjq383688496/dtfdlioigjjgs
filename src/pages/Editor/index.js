@@ -8,7 +8,7 @@ import Tool      from './Tool'
 import Quick     from './Quick'
 import Canvas    from './Canvas'
 import Attribute from './Attribute'
-
+import ShortcutKey from './ShortcutKey'
 
 import './index.less'
 
@@ -16,9 +16,12 @@ class Editor extends React.Component {
 	constructor(props) {
 		super(props)
 	}
+	componentDidMount() {
+		// let { $editor } = this.refs
+	}
 	render() {
 		return (
-			<div className="editor">
+			<div className="editor" ref="$editor">
 				<div className="editor-t">
 					<Quick/>
 				</div>
@@ -34,6 +37,7 @@ class Editor extends React.Component {
 					</div>
 				</div>
 				<div className="editor-b"></div>
+				<ShortcutKey />
 			</div>
 		)
 	}

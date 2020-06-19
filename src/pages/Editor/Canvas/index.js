@@ -74,9 +74,7 @@ class Canvas extends React.Component {
 	// 创建路径
 	render_pen = node => {
 		let { id } = this.state
-		return (
-			
-		)
+		return null
 	}
 	// 渲染选中辅助
 	renderSelectedHelp = () => {
