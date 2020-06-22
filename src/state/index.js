@@ -23,4 +23,9 @@ module.exports = {
 		height: 540,
 		// height: 360,
 	},
+	// 快捷操作
+	ShortcutKey: {
+		key:  '',	// 快捷键组合
+		type: '',	// 类型: down up
+	}
 }

@@ -26,6 +26,13 @@ export const changeControlType = control_type => ({
 	control_type
 })
 
+// 更新快捷键
+export const changeShortcutKey = shortcut_key => ({
+	type: types.CHANGE_SHORTCUT_KEY,
+	shortcut_key
+})
+
+
 export const nodeDisconnect = node_disconnect => ({
 	type: types.NODE_DISCONTENT,
 	node_disconnect

@@ -1,5 +1,6 @@
 import shiftMap  from '@var/shiftMap'
 import { sValH } from '@var/shiftValue'
+import { getAngle, pointRotate } from '@utils/transform'
 
 const { abs, atan, PI, sin, cos } = Math
 
@@ -244,29 +245,6 @@ export default class helper {
 		return { newSetectPos, x, y, cx: ncx, cy: ncy, rx, ry, w, h, rotate }
 	}
 	/* 通用方法 结束 */
-}
-
-// 获取角度
-function getAngle(cx, cy, x1, y1, x2, y2, shift = 0) {
-	let dx1 = x1 - cx,
-		dy1 = y1 - cy,
-		dx2 = x2 - cx,
-		dy2 = y2 - cy,
-		px1 = (cx <= x1? 90: 270) - shift,	// 轴坐标 x 左 || 右
-		px2 = cx <= x2? 90: 270,			// 轴坐标 x 左 || 右
-		PI2 = 2 * PI
-	let angle = abs(360 * (atan(dy1 / dx1) - atan(dy2 / dx2)) / PI2 + px1 - px2)
-	angle -= shift
-	return angle
-}
-
-function pointRotate(x, y, cx, cy, angle) {
-	if (angle < 0) angle += 360
-	angle %= 360
-	let nx, ny
-	nx = (x - cx) * cos(PI * angle / 180) - (y - cy) * sin(PI * angle / 180) + cx
-	ny = (x - cx) * sin(PI * angle / 180) + (y - cy) * cos(PI * angle / 180) + cy
-	return { x: nx, y: ny, angle }
 }
 
 // 重置位置

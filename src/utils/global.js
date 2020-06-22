@@ -67,7 +67,6 @@ module.exports = Object.assign(window, {
 		}
 	},
 
-
 	// 创建遮罩层
 	createMask() {
 		window.removeMask()

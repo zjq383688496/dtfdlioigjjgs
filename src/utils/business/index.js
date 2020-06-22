@@ -1,3 +1,3 @@
-module.exports = Object.assign(window, {
+Object.assign(window, {
 	__Redux__: {},
 })

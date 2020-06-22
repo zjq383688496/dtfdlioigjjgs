@@ -100,7 +100,6 @@ class Canvas extends React.Component {
 			{ selectMaskStatus } = this.state
 		let content  = this.renderNode(),
 			selected = this.renderSelectedHelp(),
-
 			style    = { width, height }
 		return (
 			<div className="editor-canvas" onMouseDown={this.cancelSelect}>

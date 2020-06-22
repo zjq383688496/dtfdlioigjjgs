@@ -12,13 +12,15 @@ export default function business(state = initialState, action) {
 		node_key,
 		node_data,
 		control_type,
+		shortcut_key,
 	} = action
 	let {
 		Control,
 		Canvas,
 		CurNode,
 		Nodes,
-		NodeInfo
+		NodeInfo,
+		ShortcutKey,
 	} = state,
 	{ Max } = NodeInfo
 	switch (action.type) {
@@ -42,6 +44,10 @@ export default function business(state = initialState, action) {
 		case types.CHANGE_CONTORL_TYPE:
 			Control.type = control_type
 			return ReduxUpdate({ Control })
+
+		case types.CHANGE_SHORTCUT_KEY:
+			console.log(shortcut_key)
+			return ReduxUpdate({ ShortcutKey: shortcut_key })
 
 		default:
 			return ReduxUpdate()
