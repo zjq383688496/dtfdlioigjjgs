@@ -5,12 +5,18 @@ import nodes from '@node'
 var initialState = state
 var { max, round } = Math
 
+var resetMap = {
+	circle: 1,
+	rect: 1
+}
+
 export default function business(state = initialState, action) {
 	let {
 		_this,
 		node_id,
 		node_key,
 		node_data,
+		node_options,
 		control_type,
 		shortcut_key,
 	} = action
@@ -27,8 +33,9 @@ export default function business(state = initialState, action) {
 		case types.ADD_NODE:
 			let node = nodes[node_key]
 			if (!node) return ReduxUpdate()
-			positionReset.init(node, Canvas)
-			createId(node)
+			let newNode = Object.assign(deepCopy(node), node_options)
+			if (resetMap[newNode.name]) positionReset.init(newNode, Canvas)
+			createId(newNode)
 			return ReduxUpdate({ Nodes })
 
 		case types.UPDATE_NODE:

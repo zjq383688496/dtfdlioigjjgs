@@ -10,7 +10,7 @@ export default class CircleNode extends React.Component {
 				cx={cx} cy={cy} rx={rx} ry={ry}
 				fill="none"
 				stroke="#000"
-				strokeWidth="1.5"
+				strokeWidth="2"
 				vectorEffect="non-scaling-stroke"
 				strokeDasharray="none"
 				transform={`rotate(${rotate} ${cx},${cy})`}

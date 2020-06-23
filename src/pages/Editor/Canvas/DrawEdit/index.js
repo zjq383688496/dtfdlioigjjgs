@@ -10,35 +10,44 @@ import './index.less'
 var cursorMap = {
 
 }
-var pathData = {
-	start: {
-		c: [ 250, 250 ],
-		n: [ 300, 350 ],
-	},
-	center: [
-		{
-			p: [ 400, 350 ],
-			c: [ 500, 250 ],
-			n: [ 650, 100 ],
-		},
-		{
-			p: [ 700, 200 ],
-			c: [ 750, 440 ],
-			n: [ 800, 500 ],
-		}
-	],
-	end: {
-		p: [ 400, 500 ],
-		c: [ 250, 250 ],
-	},
-}
+// var pathData = {
+// 	start: {
+// 		c: [ 250, 250 ],
+// 		n: [ 300, 350 ],
+// 	},
+// 	center: [
+// 		{
+// 			p: [ 400, 350 ],
+// 			c: [ 500, 250 ],
+// 			n: [ 650, 100 ],
+// 		},
+// 		{
+// 			p: [ 700, 200 ],
+// 			c: [ 750, 440 ],
+// 			n: [ 800, 500 ],
+// 		}
+// 	],
+// 	end: {
+// 		p: [ 400, 500 ],
+// 		c: [ 250, 250 ],
+// 	},
+// }
+var pathData = {}
 
-class Draw extends React.Component {
+class DrawEdit extends React.Component {
 	constructor(props) {
 		super(props)
-		let { ShortcutKey } = props.Config
-		let path = deepCopy(pathData),
+		let { data, Config } = props,
+			{ ShortcutKey }  = Config,
+			path     = {},
+			fragment = []
+		if (data) {
+			path     = deepCopy(data.path)
 			fragment = this.pathFragment(path)
+		}
+		// let path = deepCopy(pathData),
+		// 	fragment = this.pathFragment(path)
+		if (!data) 
 		this.state = {
 			type: '',
 			path,
@@ -68,6 +77,12 @@ class Draw extends React.Component {
 		let { key, type } = this.state.ShortcutKey
 		return (type === 'down' && key === 'key_alt')
 	}
+	// 是否删除
+	isRemove() {
+		let { path, ShortcutKey } = this.state,
+			{ key, type } = ShortcutKey
+		return type === 'down' && key === 'key_shift' && path.center.length > 2
+	}
 	// 路径片段
 	pathFragment(path) {
 		let { start, center, end } = path,
@@ -77,13 +92,21 @@ class Draw extends React.Component {
 		npath.forEach(({ c, n }, i) => {
 			if (i >= nlen - 1) return
 			let { p, c: nc } = npath[i + 1]
-			paths.push({ start: c, startB: n, endB: p, end: nc })
+			paths.push({
+				p0: c,
+				p1: n,
+				p2: p,
+				p3: nc
+			})
 		})
 		return paths
 	}
 	onMouseDown = (e, type, idx, pos) => {
 		let { path }  = this.state,
-			symmetric = this.isSymmetric()
+			symmetric = this.isSymmetric(),
+			isRemove  = this.isRemove()
+
+		if (isRemove) return this.removePoint(type, idx)
 		// let { actions } = this.props
 		// let { clientX, clientY, target } = e,
 		// 	{ top, left } = getOffset(target),
@@ -103,6 +126,7 @@ class Draw extends React.Component {
 			fragment = this.pathFragment(path)
 		this.setState({ initX: 0, initY: 0, isMove: false, path, pathBak: null, fragment })
 	}
+	// 选择当前线段
 	onSelect = (e, i) => {
 		let { fragment } = this.state,
 			centerPoint  = null
@@ -113,6 +137,19 @@ class Draw extends React.Component {
 			centerPoint = $path.getPointAtLength(total/2)
 		}
 		this.setState({ selectIdx: i, centerPoint })
+	}
+	removePoint = (type, idx) => {
+		let { path }   = this.state,
+			{ center } = path
+		if (type === 'center') {
+			center.splice(idx, 1)
+		} else {
+			let { p, c, n } = center[0]
+			path.start = { c, n }
+			path.end   = { p, c }
+			center.splice(0, 1)
+		}
+		this.setState({ path })
 	}
 	// 添加中点
 	addCenterPoint = () => {
@@ -217,7 +254,7 @@ class Draw extends React.Component {
 				ref="$path"
 				d={d}
 				stroke="#000"
-				strokeWidth="1.5"
+				strokeWidth="2"
 				fill="none"
 			/>
 		)
@@ -250,9 +287,10 @@ class Draw extends React.Component {
 					ref={`$pathHelp_${i}`}
 					d={d}
 					stroke={color}
-					strokeWidth="1.5"
+					strokeWidth="4"
 					fill="none"
 					style={style}
+					pointerEvents="stroke"
 					onMouseOver={e => this.onSelect(e, i)}
 					onMouseOut={e => this.onSelect(e, -1)}
 					onClick={this.addCenterPoint}
@@ -273,6 +311,7 @@ class Draw extends React.Component {
 				strokeWidth="1.5"
 				vectorEffect="non-scaling-stroke"
 				strokeDasharray="none"
+				style={{ pointerEvents: 'none' }}
 			></ellipse>
 		)
 	}
@@ -327,7 +366,7 @@ class Draw extends React.Component {
 	renderPoint = ([ x, y ], color = '#000', type, idx, pos) => {
 		let r = 4
 		let style = {
-			cursor: this.isSymmetric()? 'crosshair': 'default'
+			cursor: this.isSymmetric()? 'crosshair': this.isRemove()? 'cell': 'default'
 		}
 		return (
 			<ellipse
@@ -388,4 +427,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(Draw)
+)(DrawEdit)

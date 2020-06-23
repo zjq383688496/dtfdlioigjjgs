@@ -13,7 +13,7 @@ export default class RectNode extends React.Component {
 				height={h}
 				fill="none"
 				stroke="#000"
-				strokeWidth="1.5"
+				strokeWidth="2"
 				strokeDasharray="none"
 				vectorEffect="non-scaling-stroke"
 				transform={`rotate(${rotate} ${cx},${cy})`}

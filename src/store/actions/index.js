@@ -3,9 +3,10 @@
 import * as types from '../constants'
 
 // 添加节点
-export const addNode = node_key => ({
+export const addNode = (node_key, node_options = {}) => ({
 	type: types.ADD_NODE,
-	node_key
+	node_key,
+	node_options
 })
 
 // 选择节点

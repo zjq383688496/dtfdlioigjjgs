@@ -4,7 +4,7 @@ var { random, round } = Math
 module.exports = Object.assign(window, {
 	// 获取真实数据类型
 	getAttr(element) {
-		return Object.prototype.toString.call(element).match(/[A-Z][a-z]*/)[0]
+		return Object.prototype.toString.call(element).slice(8, -1)
 	},
 	// 判断是否空对象
 	isEmptyObject(obj) {
@@ -83,6 +83,7 @@ module.exports = Object.assign(window, {
 	},
 	// 获取元素的位置
 	getOffset(element) {
+		element = findDom(element)
 		let top  = element.offsetTop,
 			left = element.offsetLeft,
 			cur  = element.offsetParent
@@ -92,7 +93,11 @@ module.exports = Object.assign(window, {
 			left += cur.offsetLeft
 			cur  = cur.offsetParent
 		}
-
 		return { top, left }
+	},
+	findDom(element) {
+		let type = getAttr(element)
+		if (type === 'SVGSVGElement') return findDom(element.parentElement) 
+		return element
 	}
 })
