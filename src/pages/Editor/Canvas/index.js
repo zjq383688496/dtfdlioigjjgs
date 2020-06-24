@@ -10,7 +10,7 @@ import Circle   from './Node/Circle'
 import Rect     from './Node/Rect'
 import Path     from './Node/Path'
 
-import helper from './helper'
+import Helper from './Helper'
 
 import './index.less'
 
@@ -27,7 +27,7 @@ class Canvas extends React.Component {
 	}
 	// 选中节点
 	selectNode = (e, node) => {
-		this._helper = new helper(e, node, this)
+		this._helper = new Helper(e, node, this)
 	}
 	cancelSelect = () => {
 		let { actions } = this.props
@@ -120,6 +120,15 @@ class Canvas extends React.Component {
 							{ content }
 						</svg>
 						{ selected }
+						<ellipse
+							ref="hhh"
+							cx={0} cy={0} rx={4} ry={4}
+							fill="none"
+							stroke="#000"
+							strokeWidth="2"
+							vectorEffect="non-scaling-stroke"
+							strokeDasharray="none"
+						></ellipse>
 					</svg>
 					{
 						type === 'pen'? <DrawAdd />: null

@@ -1,71 +1,79 @@
 const shiftMap = {
+	// OK
 	tl: {
-		x: -1,
-		y: -1,
-		rel: 'br',
-		dx: -1,
-		dy: -1,
-		_x: true,
-		_y: true,
+		rel: 'br',	// 相对key
+		dx:  -1,	// X轴缩放倍率
+		dy:  -1,	// Y轴缩放倍率
+		_sx: 0,		// X轴缩放偏移倍率
+		_sy: 0,		// Y轴缩放偏移倍率
+		_x:  true,	// X轴是否偏移
+		_y:  true,	// Y轴是否偏移
 	},
+	// OK
 	tm: {
-		x: 0,
-		y: -1,
 		rel: 'bm',
-		dx: 0,
-		dy: -1,
-		_y: true,
+		dx:  0,
+		dy:  -1,
+		_sx: 0,
+		_sy: 0,
+		_y:  true,
 	},
+	// OK
 	tr: {
-		x: 1,
-		y: -1,
 		rel: 'bl',
-		dx: 1,
-		dy: -1,
-		_x: true,
-		_y: true,
+		dx:  1,
+		dy:  -1,
+		_sx: -1,
+		_sy: 0,
+		_x:  true,
+		_y:  true,
 	},
+	// OK
 	rm: {
-		x: 1,
-		y: 0,
 		rel: 'lm',
-		dx: 1,
-		dy: 0,
-		_x: true,
+		dx:  1,
+		dy:  0,
+		_sx: -1,
+		_sy: 0,
+		_x:  true,
 	},
+	// OK
 	br: {
-		x: 1,
-		y: 1,
 		rel: 'tl',
-		dx: 1,
-		dy: 1,
-		_x: true,
-		_y: true,
+		dx:  1,
+		dy:  1,
+		_sx: -1,
+		_sy: -1,
+		_x:  true,
+		_y:  true,
 	},
+	// OK
 	bm: {
-		x: 0,
-		y: 1,
 		rel: 'tm',
-		dx: 0,
-		dy: 1,
-		_y: true,
+		dx:  0,
+		dy:  1,
+		_sx: 0,
+		_sy: -1,
+		_y:  true,
 	},
+	// OK
 	bl: {
-		x: -1,
-		y: 1,
 		rel: 'tr',
-		dx: -1,
-		dy: 1,
-		_x: true,
-		_y: true,
+		dx:  -1,
+		dy:  1,
+		_sx: 0,
+		_sy: -1,
+		_x:  true,
+		_y:  true,
 	},
+	// OK
 	lm: {
-		x: -1,
-		y: 0,
 		rel: 'rm',
-		dx: -1,
-		dy: 0,
-		_x: true,
+		dx:  -1,
+		dy:  0,
+		_sx: 0,
+		_sy: 0,
+		_x:  true,
 	},
 }
 export default shiftMap

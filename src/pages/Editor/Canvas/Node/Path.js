@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { mergePos } from '../utils'
+
 export default class PathNode extends React.Component {
 	// 生成路径
 	genPath(path) {
@@ -41,9 +43,4 @@ export default class PathNode extends React.Component {
 			></path>
 		)
 	}
-}
-
-// 组合坐标
-function mergePos([ x, y ]) {
-	return `${~~x},${~~y}`
 }

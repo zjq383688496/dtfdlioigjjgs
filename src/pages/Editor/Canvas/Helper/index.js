@@ -1,11 +1,12 @@
 import shiftMap  from '@var/shiftMap'
 import { sValH } from '@var/shiftValue'
 import { getAngle, pointRotate } from '@utils/transform'
+import translate from './translate'
 
-const { abs, atan, PI, sin, cos } = Math
+var { abs, atan, PI, sin, cos } = Math
 
 // 选中节点初始化
-export default class helper {
+export default class Helper {
 	constructor(e, _node, _ref) {
 		this._node = _node
 		this._ref  = _ref
@@ -98,27 +99,48 @@ export default class helper {
 	}
 	// 缩放进行
 	scaleMove = (CurNode, initX, initY, clientX, clientY, type) => {
-		let { name } = CurNode
-		let { $CurNode, refs: { help_path } } = this._ref,
-			{ newSetectPos, rotate, w, h, x, y, cx, cy, rx, ry } = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type),
-			{ tl, tr, br, bl } = newSetectPos
+		let { name, layout } = CurNode,
+			{ $CurNode, refs: { help_path, hhh } } = this._ref,
+			{ newSetectPos, rotate, w, h, x, y, cx, cy, rx, ry, rel, sx, sy } = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type),
+			{ tl, tr, br, bl } = newSetectPos,
+			{ _sx, _sy } = shiftMap[rel],
+			re = newSetectPos[rel]
 
 		let d = `M${tl.x},${tl.y} L${tr.x},${tr.y} ${br.x},${br.y} ${bl.x},${bl.y}z`
 		help_path.setAttribute('d', d)
-		$CurNode.setAttribute('x', x)
-		$CurNode.setAttribute('y', y)
 
-		if (name === 'circle') {
-			$CurNode.setAttribute('cx', cx)
-			$CurNode.setAttribute('cy', cy)
-			$CurNode.setAttribute('rx', rx)
-			$CurNode.setAttribute('ry', ry)
-			resetTransform($CurNode, rotate, cx, cy)
-		} else {
-			$CurNode.setAttribute('width', w)
-			$CurNode.setAttribute('height', h)
-			resetTransform($CurNode, rotate, cx, cy)
-		}
+		// re = pointRotate(re.x, re.y, cx, cy, rotate)
+		let transform = ''
+		hhh.setAttribute('cx', re.x)
+		hhh.setAttribute('cy', re.y)
+		console.log(rel, _sx, _sy)
+		transform += ` translate(0 0)`
+		// transform += ` translate(${layout.w * _sx} ${layout.h * _sx})`
+		// transform += ` translate(${-layout.x*sx} ${-layout.y*sy})`
+		transform += ` scale(${sx},${sy})`
+		transform += ` translate(${layout.w * _sx} ${layout.h * _sy})`
+		transform += ` translate(${layout.x / sx - layout.w * _sx / sx} ${layout.y / sy - layout.h * _sy / sy})`
+		// transform += ` translate(${0} ${0})`
+		// transform += ` translate(${tl.x},${tl.y})`
+		// transform += ` rotate(${rotate} ${cx},${cy})`
+		$CurNode.setAttribute('transform', transform)
+		// $CurNode.setAttribute('x', 0)
+		// $CurNode.setAttribute('y', 0)
+		$CurNode.setAttribute('cx', -layout.rx)
+		$CurNode.setAttribute('cy', -layout.ry)
+		// $CurNode.setAttribute('transform-origin', `${re.x} ${re.y}`)
+		// $CurNode.setAttribute('x', x)
+		// $CurNode.setAttribute('y', y)
+		// if (name === 'circle') {
+		// 	$CurNode.setAttribute('cx', cx)
+		// 	$CurNode.setAttribute('cy', cy)
+		// 	$CurNode.setAttribute('rx', rx)
+		// 	$CurNode.setAttribute('ry', ry)
+		// } else {
+		// 	$CurNode.setAttribute('width', w)
+		// 	$CurNode.setAttribute('height', h)
+		// }
+		// resetTransform($CurNode, rotate, cx, cy)
 	}
 	/* 操作进行 - 结束 */
 
@@ -138,14 +160,18 @@ export default class helper {
 	moveEnd = (actions, CurNode, initX, initY, clientX, clientY) => {
 		let move = this.moveGlobal(CurNode, initX, initY, clientX, clientY)
 		if (!move) return
-		let { x, y, cx, cy, rotate, diffX, diffY } = move,
+		let { name } = CurNode,
+			{ x, y, cx, cy, rotate, diffX, diffY } = move,
 			{ $CurNode, refs: { svg_select } } = this._ref
-
 		x  += diffX
 		y  += diffY
 		cx += diffX
 		cy += diffY
 		Object.assign(CurNode.layout, { x, y, cx, cy })
+		if (translate[name]) {
+			let fn = translate[name].moveEnd
+			fn && fn(CurNode, move)
+		}
 		resetTransform($CurNode, rotate, cx, cy)
 		actions.updateNode(CurNode)
 	}
@@ -164,8 +190,10 @@ export default class helper {
 			{ x, y, cx, cy, rx, ry, w, h, rotate } = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type)
 
 		Object.assign(CurNode.layout, { x, y, w, h, rx, ry, cx, cy })
+		// $CurNode.removeAttribute('transform-origin')
+		$CurNode.setAttribute('x', x)
+		$CurNode.setAttribute('y', y)
 		actions.updateNode(CurNode)
-		// resetTransform($CurNode, rotate, cx, cy)
 	}
 
 	/* 通用方法 开始 */
@@ -233,8 +261,8 @@ export default class helper {
 			let shf = shiftMap[key],
 				pos = newSetectPos[key],
 				hel = refs[`res_${key}`]
-			if (shiftX) pos.x = _cx + rx * shf.x
-			if (shiftY) pos.y = _cy + ry * shf.y
+			if (shiftX) pos.x = _cx + rx * shf.dx
+			if (shiftY) pos.y = _cy + ry * shf.dy
 			hel.setAttribute('x', pos.x - sValH)
 			hel.setAttribute('y', pos.y - sValH)
 		})
@@ -242,7 +270,7 @@ export default class helper {
 		let { x: ncx, y: ncy } = pointRotate(_cx, _cy, cx, cy, rotate)
 		x = ncx - rx
 		y = ncy - ry
-		return { newSetectPos, x, y, cx: ncx, cy: ncy, rx, ry, w, h, rotate }
+		return { newSetectPos, x, y, cx: ncx, cy: ncy, rx, ry, w, h, rotate, rel, sx, sy }
 	}
 	/* 通用方法 结束 */
 }

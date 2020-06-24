@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import * as actions from 'actions'
 
 import { getAngle, pointRotate } from '@utils/transform'
+import { mergePos } from '../utils'
 
 import './index.less'
 
@@ -413,10 +414,6 @@ class DrawEdit extends React.Component {
 			</div>
 		)
 	}
-}
-// 组合坐标
-function mergePos([ x, y ]) {
-	return `${x},${y}`
 }
 
 const mapStateToProps = state => state

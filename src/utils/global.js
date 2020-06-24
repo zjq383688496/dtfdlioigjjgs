@@ -85,19 +85,18 @@ module.exports = Object.assign(window, {
 	getOffset(element) {
 		element = findDom(element)
 		let top  = element.offsetTop,
-			left = element.offsetLeft,
-			cur  = element.offsetParent
-
+			left = element.offsetLeft   || 0,
+			cur  = element.offsetParent || 0
 		while (cur) {
-			top  += cur.offsetTop
-			left += cur.offsetLeft
+			top  += cur.offsetTop  || 0
+			left += cur.offsetLeft || 0
 			cur  = cur.offsetParent
 		}
 		return { top, left }
 	},
 	findDom(element) {
 		let type = getAttr(element)
-		if (type === 'SVGSVGElement') return findDom(element.parentElement) 
+		if (/^SVG/.test(type)) return findDom(element.parentElement)
 		return element
 	}
 })

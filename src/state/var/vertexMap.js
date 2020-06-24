@@ -35,6 +35,5 @@ function getVertex(angle) {
 	for (var i = 0; i < num; i++) {
 		vx.push(vx.shift())
 	}
-	console.log(vx)
 	return vx
 }

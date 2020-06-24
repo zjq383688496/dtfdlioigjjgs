@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import * as actions from 'actions'
 
 import { getAngle, pointRotate } from '@utils/transform'
+import { mergePos } from '../utils'
 
 import './index.less'
 
@@ -208,43 +209,37 @@ class DrawAdd extends React.Component {
 	renderHelper = () => {
 		let { path } = this.state
 		let { start, center, end } = path
-		let startDom  = null,
-			centerDom = [],
-			endDom    = null,
-			idx = -1
+		let sDom = null,
+			cDom = [],
+			eDom = null,
+			idx  = 0
 		if (start) {
-			startDom = this.renderPointLine(start, ++idx, 'start')
+			sDom = this.renderPointLine(start, idx, 'start')
 		}
 		if (end) {
-			endDom = this.renderPointLine(end, ++idx, 'end')
+			eDom = this.renderPointLine(end, ++idx, 'end')
 		}
 		if (center && center.length) {
-			centerDom = center.map((_, i) => {
-				return this.renderPointLine(_, ++idx, 'center', i)
-			})
+			cDom = center.map(_ => this.renderPointLine(_, ++idx, 'center'))
 		}
-		return [ startDom, ...centerDom, endDom ]
+		return [ sDom, ...cDom, eDom ]
 	}
 	// 渲染点&线
-	renderPointLine = ({ p, c, n }, key, type, idx) => {
+	renderPointLine = ({ p, c, n }, key, type) => {
 		let pLine  = null,
 			nLine  = null,
 			pPoint = null,
 			nPoint = null,
 			cPoint = null
-		if (!c[0] || !c[1]) {
-			debugger
-		}
-		cPoint = this.renderPoint(c, '#f00', type, idx, 'c')
+		cPoint = this.renderPoint(c, '#f00', type, 'c')
 		if (p) {
-			pPoint = this.renderPoint(p, undefined, type, idx, 'p')
+			pPoint = this.renderPoint(p, undefined, type, 'p')
 			pLine  = this.renderLine(p, c)
 		}
 		if (n) {
-			nPoint = this.renderPoint(n, undefined, type, idx, 'n')
+			nPoint = this.renderPoint(n, undefined, type, 'n')
 			nLine  = this.renderLine(n, c)
 		}
-		// console.log(key)
 		return (
 			<g key={key}>
 				{pLine}
@@ -256,7 +251,7 @@ class DrawAdd extends React.Component {
 		)
 	}
 	// 渲染点
-	renderPoint = ([ x, y ], color = '#000', type, idx, pos) => {
+	renderPoint = ([ x, y ], color = '#000', type, pos) => {
 		let r = 4
 		let style = {
 			pointerEvents: 'none'
@@ -303,10 +298,6 @@ class DrawAdd extends React.Component {
 			</div>
 		)
 	}
-}
-// 组合坐标
-function mergePos([ x, y ]) {
-	return `${~~x},${~~y}`
 }
 
 const mapStateToProps = state => state
