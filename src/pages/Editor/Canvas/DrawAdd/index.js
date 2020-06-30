@@ -28,19 +28,16 @@ class DrawAdd extends React.Component {
 			pathBak: null,
 			ShortcutKey,
 			idx: -1,
-			complete: false
+			complete: false,
 		}
 	}
 	componentDidUpdate() {
-		if (!this.state.complete) return
+		let { complete } = this.state
+		if (!complete) return
 		let { path, fragment } = this.state,
-			{ center } = path,
 			{ actions } = this.props,
 			layout      = this.getLayout()
-		if (fragment.length > 3) {
-			if (center && center.length) center.pop()
-			actions.addNode('path', { path, layout })
-		}
+		if (fragment.length > 3) actions.addNode('path', { path, layout })
 		actions.changeControlType('')
 	}
 	static getDerivedStateFromProps(nextProps, preState) {
@@ -122,7 +119,14 @@ class DrawAdd extends React.Component {
 	}
 	onContextMenu = e => {
 		e.preventDefault()
-		this.setState({ complete: true })
+		let { path, fragment } = this.state,
+			{ center }  = path,
+			{ actions } = this.props
+		if (fragment.length > 3) {
+			if (center && center.length) center.pop()
+		}
+		console.log('ContextMenu', e.keyCode)
+		this.setState({ complete: true, path, fragment })
 	}
 	globalMove = e => {
 		if (!this.state.isMove) return

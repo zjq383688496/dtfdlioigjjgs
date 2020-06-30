@@ -111,41 +111,13 @@ export default class Helper {
 		let d = `M${tl.x},${tl.y} L${tr.x},${tr.y} ${br.x},${br.y} ${bl.x},${bl.y}z`
 		help_path.setAttribute('d', d)
 
-		hhh.setAttribute('cx', re.x)
-		hhh.setAttribute('cy', re.y)
-		
-		if (tsFun && tsFun[name]) tsFun[name](CurNode, move, $CurNode, '')
+		// hhh.setAttribute('cx', re.x)
+		// hhh.setAttribute('cy', re.y)
 
-		// re = pointRotate(re.x, re.y, cx, cy, rotate)
-		// let transform = ''
-		// console.log(rel, _sx, _sy)
-		// transform += ` translate(0 0)`
-		// transform += ` translate(${layout.w * _sx} ${layout.h * _sx})`
-		// transform += ` translate(${-layout.x*sx} ${-layout.y*sy})`
-		// transform += ` scale(${sx},${sy})`
-		// transform += ` translate(${layout.w * _sx} ${layout.h * _sy})`
-		// transform += ` translate(${layout.x / sx - layout.w * _sx / sx} ${layout.y / sy - layout.h * _sy / sy})`
-		// transform += ` translate(${0} ${0})`
-		// transform += ` translate(${tl.x},${tl.y})`
-		// transform += ` rotate(${rotate} ${cx},${cy})`
-		// $CurNode.setAttribute('transform', transform)
-		// $CurNode.setAttribute('x', 0)
-		// $CurNode.setAttribute('y', 0)
-		// $CurNode.setAttribute('cx', -layout.rx)
-		// $CurNode.setAttribute('cy', -layout.ry)
-		// $CurNode.setAttribute('transform-origin', `${re.x} ${re.y}`)
-		// $CurNode.setAttribute('x', x)
-		// $CurNode.setAttribute('y', y)
-		// if (name === 'circle') {
-		// 	$CurNode.setAttribute('cx', cx)
-		// 	$CurNode.setAttribute('cy', cy)
-		// 	$CurNode.setAttribute('rx', rx)
-		// 	$CurNode.setAttribute('ry', ry)
-		// } else {
-		// 	$CurNode.setAttribute('width', w)
-		// 	$CurNode.setAttribute('height', h)
-		// }
-		// resetTransform($CurNode, rotate, cx, cy)
+		if (tsFun && tsFun[name]) tsFun[name](CurNode, move, $CurNode, '')
+		$CurNode.setAttribute('x', x)	// rect,circle 有效
+		$CurNode.setAttribute('y', y)	// rect,circle 有效
+		resetTransform($CurNode, rotate, cx, cy)
 	}
 	/* 操作进行 - 结束 */
 
@@ -189,11 +161,14 @@ export default class Helper {
 	}
 	// 缩放结束
 	scaleEnd = (actions, CurNode, initX, initY, clientX, clientY, type) => {
+		let tsFun = translate.scaleEnd
 		let { $CurNode, refs } = this._ref,
-			{ x, y, cx, cy, rx, ry, w, h, rotate } = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type)
+			{ name, layout } = CurNode,
+			move = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type),
+			{ x, y, cx, cy, rx, ry, w, h, rotate } = move
 
-		Object.assign(CurNode.layout, { x, y, w, h, rx, ry, cx, cy })
-		// $CurNode.removeAttribute('transform-origin')
+		if (tsFun && tsFun[name]) tsFun[name](CurNode, move, $CurNode, '')
+		Object.assign(layout, { x, y, w, h, rx, ry, cx, cy })
 		$CurNode.setAttribute('x', x)
 		$CurNode.setAttribute('y', y)
 		actions.updateNode(CurNode)

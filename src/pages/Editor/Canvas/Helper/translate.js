@@ -1,4 +1,7 @@
-module.exports = {
+var { getAngle, pointRotate } = require('@utils/transform')
+var { mergePos } = require('../utils')
+
+const translate = {
 	/* 缩放中 */
 	scaleMove: {
 		/**
@@ -11,24 +14,26 @@ module.exports = {
 		 */
 		rect(CurNode, move, $CurNode, transform = '') {
 			let { x, y, cx, cy, rotate, w, h } = move
-			$CurNode.setAttribute('x', x)
-			$CurNode.setAttribute('y', y)
 			$CurNode.setAttribute('width', w)
 			$CurNode.setAttribute('height', h)
-			resetTransform($CurNode, rotate, cx, cy)
 		},
 		circle(CurNode, move, $CurNode, transform = '') {
 			let { x, y, cx, cy, rx, ry, rotate, w, h } = move
-			$CurNode.setAttribute('x', x)
-			$CurNode.setAttribute('y', y)
 			$CurNode.setAttribute('cx', cx)
 			$CurNode.setAttribute('cy', cy)
 			$CurNode.setAttribute('rx', rx)
 			$CurNode.setAttribute('ry', ry)
-			resetTransform($CurNode, rotate, cx, cy)
 		},
 		path(CurNode, move, $CurNode, transform = '') {
-			
+			let { layout, path } = CurNode
+			let { x, y, sx, sy, cx, cy, rotate, w, h } = move
+			let nw = pointRotate(x, y, cx, cy, rotate)
+			let dx = x - layout.x,
+				dy = y - layout.y
+			let newPath = scalePath(path, x, y, dx, dy, sx, sy),
+				d = genPath(newPath)
+			$CurNode.setAttribute('d', d)
+			return newPath
 		}
 	},
 	/* 移动结束 */
@@ -51,8 +56,24 @@ module.exports = {
 				})
 			})
 		}
+	},
+	/* 缩放结束 */
+	scaleEnd: {
+		/**
+		 * [scaleEnd 缩放结束]
+		 * @param  {[Object]}   CurNode  [当前节点数据]
+		 * @param  {[Object]}   move     [偏移数据]
+		 * @param  {[Document]} $CurNode [节点DOM]
+		 * @param  {[String]}   transform [变形样式]
+		 * @return {[Null]} [null]
+		 */
+		path(CurNode, move, $CurNode, transform = '') {
+			CurNode.path = translate.scaleMove.path(...arguments)
+		}
 	}
 }
+
+module.exports = translate
 
 // 重置位置
 function resetTransform($CurNode, rotate, cx, cy, x, y) {
@@ -61,4 +82,42 @@ function resetTransform($CurNode, rotate, cx, cy, x, y) {
 	transform += ` rotate(${rotate} ${cx},${cy})`
 	if (!transform || !$CurNode) return
 	$CurNode.setAttribute('transform', transform)
+}
+
+function scalePath(path, x, y, dx, dy, sx, sy) {
+	let newPath = deepCopy(path)
+	let { start, center, end } = newPath
+	let list = [ start, ...center, end ]
+	list.forEach(_ => {
+		Object.keys(_).forEach(key => {
+			let val        = _[key],
+				[ _x, _y ] = val
+			_x += dx
+			_y += dy
+			val[0] = parseFloat(((_x - x) * sx + x).toFixed(2))
+			val[1] = parseFloat(((_y - y) * sy + y).toFixed(2))
+		})
+	})
+	return newPath
+}
+function genPath(path) {
+	let { start, center, end } = path,
+		startStr  = '',
+		centerStr = '',
+		endStr    = ''
+	
+	if (start) {
+		let { c, n } = start
+		startStr = mergePos(c) + ' C' + mergePos(n)
+	}
+	if (end) {
+		let { p, c } = end
+		endStr = mergePos(p) + ' ' + mergePos(c)
+	}
+
+	centerStr = center.map(({ p, c, n }, i) => {
+		return mergePos(p) + ' ' + mergePos(c) + ' ' + mergePos(n)
+	}).join(' ')
+
+	return 'M' + [ startStr, centerStr, endStr ].join(' ') + 'z'
 }
