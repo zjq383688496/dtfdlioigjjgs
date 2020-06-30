@@ -99,9 +99,11 @@ export default class Helper {
 	}
 	// 缩放进行
 	scaleMove = (CurNode, initX, initY, clientX, clientY, type) => {
+		let tsFun = translate.scaleMove
 		let { name, layout } = CurNode,
 			{ $CurNode, refs: { help_path, hhh } } = this._ref,
-			{ newSetectPos, rotate, w, h, x, y, cx, cy, rx, ry, rel, sx, sy } = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type),
+			move = this.scaleGlobal(CurNode, initX, initY, clientX, clientY, type),
+			{ newSetectPos, rotate, w, h, x, y, cx, cy, rx, ry, rel, sx, sy } = move,
 			{ tl, tr, br, bl } = newSetectPos,
 			{ _sx, _sy } = shiftMap[rel],
 			re = newSetectPos[rel]
@@ -109,25 +111,28 @@ export default class Helper {
 		let d = `M${tl.x},${tl.y} L${tr.x},${tr.y} ${br.x},${br.y} ${bl.x},${bl.y}z`
 		help_path.setAttribute('d', d)
 
-		// re = pointRotate(re.x, re.y, cx, cy, rotate)
-		let transform = ''
 		hhh.setAttribute('cx', re.x)
 		hhh.setAttribute('cy', re.y)
-		console.log(rel, _sx, _sy)
-		transform += ` translate(0 0)`
+		
+		if (tsFun && tsFun[name]) tsFun[name](CurNode, move, $CurNode, '')
+
+		// re = pointRotate(re.x, re.y, cx, cy, rotate)
+		// let transform = ''
+		// console.log(rel, _sx, _sy)
+		// transform += ` translate(0 0)`
 		// transform += ` translate(${layout.w * _sx} ${layout.h * _sx})`
 		// transform += ` translate(${-layout.x*sx} ${-layout.y*sy})`
-		transform += ` scale(${sx},${sy})`
-		transform += ` translate(${layout.w * _sx} ${layout.h * _sy})`
-		transform += ` translate(${layout.x / sx - layout.w * _sx / sx} ${layout.y / sy - layout.h * _sy / sy})`
+		// transform += ` scale(${sx},${sy})`
+		// transform += ` translate(${layout.w * _sx} ${layout.h * _sy})`
+		// transform += ` translate(${layout.x / sx - layout.w * _sx / sx} ${layout.y / sy - layout.h * _sy / sy})`
 		// transform += ` translate(${0} ${0})`
 		// transform += ` translate(${tl.x},${tl.y})`
 		// transform += ` rotate(${rotate} ${cx},${cy})`
-		$CurNode.setAttribute('transform', transform)
+		// $CurNode.setAttribute('transform', transform)
 		// $CurNode.setAttribute('x', 0)
 		// $CurNode.setAttribute('y', 0)
-		$CurNode.setAttribute('cx', -layout.rx)
-		$CurNode.setAttribute('cy', -layout.ry)
+		// $CurNode.setAttribute('cx', -layout.rx)
+		// $CurNode.setAttribute('cy', -layout.ry)
 		// $CurNode.setAttribute('transform-origin', `${re.x} ${re.y}`)
 		// $CurNode.setAttribute('x', x)
 		// $CurNode.setAttribute('y', y)
@@ -160,6 +165,7 @@ export default class Helper {
 	moveEnd = (actions, CurNode, initX, initY, clientX, clientY) => {
 		let move = this.moveGlobal(CurNode, initX, initY, clientX, clientY)
 		if (!move) return
+		let tsFun = translate.moveEnd
 		let { name } = CurNode,
 			{ x, y, cx, cy, rotate, diffX, diffY } = move,
 			{ $CurNode, refs: { svg_select } } = this._ref
@@ -168,10 +174,7 @@ export default class Helper {
 		cx += diffX
 		cy += diffY
 		Object.assign(CurNode.layout, { x, y, cx, cy })
-		if (translate[name]) {
-			let fn = translate[name].moveEnd
-			fn && fn(CurNode, move)
-		}
+		if (tsFun && tsFun[name]) tsFun[name](CurNode, move)
 		resetTransform($CurNode, rotate, cx, cy)
 		actions.updateNode(CurNode)
 	}
