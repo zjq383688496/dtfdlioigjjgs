@@ -25,7 +25,7 @@ export default class PathNode extends React.Component {
 		return 'M' + [ startStr, centerStr, endStr ].join(' ') + 'z'
 	}
 	render() {
-		let { id, data, parent, mouseDownHandler } = this.props,
+		let { id, data, parent, mouseDownHandler, visible } = this.props,
 			{ layout, path }   = data,
 			{ cx, cy, rotate } = layout,
 			d = this.genPath(path)
@@ -35,6 +35,7 @@ export default class PathNode extends React.Component {
 				d={d}
 				fill="none"
 				stroke="#000"
+				strokeOpacity={visible? 1: 0}
 				strokeWidth="2"
 				vectorEffect="non-scaling-stroke"
 				strokeDasharray="none"

@@ -11,44 +11,19 @@ import './index.less'
 var cursorMap = {
 
 }
-// var pathData = {
-// 	start: {
-// 		c: [ 250, 250 ],
-// 		n: [ 300, 350 ],
-// 	},
-// 	center: [
-// 		{
-// 			p: [ 400, 350 ],
-// 			c: [ 500, 250 ],
-// 			n: [ 650, 100 ],
-// 		},
-// 		{
-// 			p: [ 700, 200 ],
-// 			c: [ 750, 440 ],
-// 			n: [ 800, 500 ],
-// 		}
-// 	],
-// 	end: {
-// 		p: [ 400, 500 ],
-// 		c: [ 250, 250 ],
-// 	},
-// }
-var pathData = {}
 
 class DrawEdit extends React.Component {
 	constructor(props) {
 		super(props)
-		let { data, Config } = props,
-			{ ShortcutKey }  = Config,
+		let { Config } = props,
+			{ ShortcutKey, CurNode }  = Config,
 			path     = {},
 			fragment = []
-		if (data) {
-			path     = deepCopy(data.path)
+		if (CurNode) {
+			let { rotate, cx, cy } = CurNode.layout
+			path     = this.pathRotate(CurNode.path, rotate, cx, cy)
 			fragment = this.pathFragment(path)
 		}
-		// let path = deepCopy(pathData),
-		// 	fragment = this.pathFragment(path)
-		if (!data) 
 		this.state = {
 			type: '',
 			path,
@@ -63,6 +38,7 @@ class DrawEdit extends React.Component {
 			ShortcutKey,
 			selectIdx: -1,
 			centerPoint: null,
+			complete: false,
 		}
 	}
 	static getDerivedStateFromProps(nextProps, preState) {
@@ -72,6 +48,35 @@ class DrawEdit extends React.Component {
 			return { ShortcutKey }
 		}
 		return null
+	}
+	componentDidUpdate() {
+		let { complete } = this.state
+		if (!complete) return
+		let { path } = this.state,
+			layout   = this.getLayout(),
+			{ actions, Config, pathEditCloseFun } = this.props,
+			{ CurNode } = Config
+
+		Object.assign(CurNode, { path })
+		Object.assign(CurNode.layout, layout)
+		actions.updateNode(CurNode)
+		this.setState({ complete: false })
+		pathEditCloseFun(false)
+		// actions.changeControlType('')
+	}
+	pathRotate(path, rotate, cx, cy) {
+		path = deepCopy(path)
+		if (!rotate) return path
+		let { start, center, end } = path,
+			arr = [ start, ...center, end ]
+		arr.forEach(_ => {
+			Object.values(_).forEach(val => {
+				let { x, y } = pointRotate(val[0], val[1], cx, cy, rotate)
+				val[0] = x
+				val[1] = y
+			})
+		})
+		return path
 	}
 	// 是否对称
 	isSymmetric() {
@@ -103,6 +108,7 @@ class DrawEdit extends React.Component {
 		return paths
 	}
 	onMouseDown = (e, type, idx, pos) => {
+		e.stopPropagation()
 		let { path }  = this.state,
 			symmetric = this.isSymmetric(),
 			isRemove  = this.isRemove()
@@ -126,6 +132,31 @@ class DrawEdit extends React.Component {
 		let path     = this.globalMove(e),
 			fragment = this.pathFragment(path)
 		this.setState({ initX: 0, initY: 0, isMove: false, path, pathBak: null, fragment })
+	}
+	onContextMenu = e => {
+		e.preventDefault()
+		e.stopPropagation()
+		let { rotate } = this.props.Config.CurNode.layout
+		let { path } = this.state
+		let layout   = this.getLayout(),
+			newPath  = this.pathRotate(path, -rotate, layout.cx, layout.cy)
+
+		this.setState({ path: newPath, fragment: [], complete: true })
+	}
+	getLayout() {
+		let { $path } = this.refs
+		if (!$path) return {}
+		let { x, y, width: w, height: h } = $path.getBBox(),
+			rx = w / 2,
+			ry = h / 2,
+			layout = {
+				x, y, w, h,
+				cx: x + rx,
+				cy: y + ry,
+				rx,
+				ry
+			}
+		return layout
 	}
 	// 选择当前线段
 	onSelect = (e, i) => {
@@ -158,11 +189,7 @@ class DrawEdit extends React.Component {
 		let { path, selectIdx, centerPoint } = this.state,
 			{ center } = path,
 			len = center.length,
-			// method = 'unshift',
 			point  = [ centerPoint.x, centerPoint.y ]
-		// if (selectIdx === len) method = 'push'
-		// splice
-		// debugger
 		center.splice(selectIdx, 0, {
 			p: deepCopy(point),
 			c: deepCopy(point),
@@ -392,7 +419,6 @@ class DrawEdit extends React.Component {
 	}
 	render() {
 		let { type } = this.props.Config.Control
-		if (type != 'pen') return null
 		let pathHelp  = this.renderPathHelper()
 		let pathDom   = this.renderPath()
 		let helper    = this.renderHelper()
@@ -400,8 +426,10 @@ class DrawEdit extends React.Component {
 		return (
 			<div
 				className="pen-area"
+				onMouseDown={e => e.stopPropagation()}
 				onMouseMove={this.onMouseMove}
 				onMouseUp={this.onMouseUp}
+				onContextMenu={this.onContextMenu}
 			>
 				<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 					<g style={{ pointerEvents: 'all' }} ref="svg_content">

@@ -18,21 +18,32 @@ class Canvas extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			selectMaskStatus: false,
+			selectMaskStatus: false,	// 选择遮罩状态
+			editPathStatus: false,		// 编辑路径状态
 			setectType:   null,
 			setectParame: null,
 			initX: 0,
-			initY: 0
+			initY: 0,
+			dbclick: {
+				click: 0,
+				x: 0,
+				y: 0,
+				start: 0
+			}
 		}
 	}
+	timeout_dbclick = null
 	// 选中节点
 	selectNode = (e, node) => {
+		let { dbclick } = this.state
+		if (node.name === 'path') this.dbclickTrigger(e, 'down')
 		this._helper = new Helper(e, node, this)
 	}
 	cancelSelect = () => {
 		let { actions } = this.props
 		this._helper  = null
 		this.$CurNode = null
+		alert('cancel')
 		actions.selectNode(null)
 	}
 	// 渲染节点
@@ -75,12 +86,13 @@ class Canvas extends React.Component {
 	}
 	// 创建路径
 	render_path = node => {
-		let { id } = this.state
+		let { id, editPathStatus } = this.state
 		return (
 			<Path
 				parent={this}
 				id={id}
 				data={node}
+				visible={!editPathStatus}
 				mouseDownHandler={this.selectNode}
 			/>
 		)
@@ -102,13 +114,64 @@ class Canvas extends React.Component {
 	}
 	// 设置结束
 	setEnd = e => {
+		let { CurNode }  = this.props.Config
+		if (!CurNode) return null
+
+		if (CurNode.name === 'path') {
+			this.dbclickTrigger(e, 'up', () => {
+				this.setState({
+					editPathStatus: true
+				})
+			})
+		}
 		this._helper.endInit(e)
+	}
+	// 双击初始化
+	dbclickInit = e => {
+		this.setState({ dbclick: { click: 0, x: 0, y: 0, start: 0 } })
+	}
+	dbclickTrigger = (e, type, cb) => {
+		let { dbclick } = this.state,
+			{ click, x, y, start } = dbclick,
+			{ clientX, clientY } = e,
+			now = Date.now()
+		switch (type) {
+			case 'down':
+				if (!click) {
+					this.timeout_dbclick = setTimeout(() => {
+						clearTimeout(this.timeout_dbclick)
+						this.dbclickInit()
+					}, 600)
+					dbclick.start = now
+				}
+				Object.assign(dbclick, {
+					x: clientX,
+					y: clientY
+				})
+				break
+			case 'up':
+				if (x === clientX || y === clientY) {
+					Object.assign(dbclick, { click: click + 1 })
+				}
+				if (dbclick.click == 2) {
+					clearTimeout(this.timeout_dbclick)
+					this.dbclickInit()
+					cb && cb()
+					return
+				}
+				break
+		}
+		this.setState({ dbclick })
+	}
+	editPathClose = () => {
+		debugger
+		this.setState({ editPathStatus: false })
 	}
 	render() {
 		let { Canvas, Control } = this.props.Config,
 			{ width, height } = Canvas,
 			{ type } = Control,
-			{ selectMaskStatus } = this.state
+			{ selectMaskStatus, editPathStatus } = this.state
 		let content  = this.renderNode(),
 			selected = this.renderSelectedHelp(),
 			style    = { width, height }
@@ -119,7 +182,9 @@ class Canvas extends React.Component {
 						<svg id="svgContent" width="100%" height="100%" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
 							{ content }
 						</svg>
-						{ selected }
+						{
+							!editPathStatus? selected: null
+						}
 						<ellipse
 							ref="hhh"
 							cx={0} cy={0} rx={4} ry={4}
@@ -132,6 +197,9 @@ class Canvas extends React.Component {
 					</svg>
 					{
 						type === 'pen'? <DrawAdd />: null
+					}
+					{
+						editPathStatus? <DrawEdit pathEditCloseFun={this.editPathClose} />: null
 					}
 				</div>
 				{

@@ -67,6 +67,7 @@ class DrawAdd extends React.Component {
 		return paths
 	}
 	onMouseDown = e => {
+		e.stopPropagation()
 		let { clientX, clientY, target } = e,
 			{ top, left } = getOffset(target),
 			initX = clientX - left,
@@ -119,13 +120,13 @@ class DrawAdd extends React.Component {
 	}
 	onContextMenu = e => {
 		e.preventDefault()
+		e.stopPropagation()
 		let { path, fragment } = this.state,
 			{ center }  = path,
 			{ actions } = this.props
 		if (fragment.length > 3) {
 			if (center && center.length) center.pop()
 		}
-		console.log('ContextMenu', e.keyCode)
 		this.setState({ complete: true, path, fragment })
 	}
 	globalMove = e => {

@@ -28,6 +28,8 @@ const translate = {
 			let { layout, path } = CurNode
 			let { x, y, sx, sy, cx, cy, rotate, w, h } = move
 			let nw = pointRotate(x, y, cx, cy, rotate)
+			if (sx < 0) x += w
+			if (sy < 0) y += h
 			let dx = x - layout.x,
 				dy = y - layout.y
 			let newPath = scalePath(path, x, y, dx, dy, sx, sy),
@@ -101,21 +103,15 @@ function scalePath(path, x, y, dx, dy, sx, sy) {
 	return newPath
 }
 function genPath(path) {
-	let { start, center, end } = path,
-		startStr  = '',
-		centerStr = '',
-		endStr    = ''
+	var { start, center, end } = path
 	
-	if (start) {
-		let { c, n } = start
+	var { c, n } = start,
 		startStr = mergePos(c) + ' C' + mergePos(n)
-	}
-	if (end) {
-		let { p, c } = end
-		endStr = mergePos(p) + ' ' + mergePos(c)
-	}
 
-	centerStr = center.map(({ p, c, n }, i) => {
+	var { p, c } = end,
+		endStr = mergePos(p) + ' ' + mergePos(c)
+
+	var centerStr = center.map(({ p, c, n }, i) => {
 		return mergePos(p) + ' ' + mergePos(c) + ' ' + mergePos(n)
 	}).join(' ')
 
