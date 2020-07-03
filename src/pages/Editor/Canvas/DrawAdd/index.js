@@ -283,7 +283,7 @@ class DrawAdd extends React.Component {
 	}
 	render() {
 		let { type } = this.props.Config.Control
-		if (type != 'pen') return null
+		if (type != 'closePath') return null
 		let pathDom = this.renderPath()
 		let helper  = this.renderHelper()
 		return (

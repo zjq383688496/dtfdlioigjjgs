@@ -32,8 +32,8 @@ class Tool extends React.Component {
 		this.props.actions.addNode(key)
 	}
 
-	// 使用钢笔工具
-	ctrl_pen = key => {
+	// 使用闭合路径
+	ctrl_closePath = key => {
 		this.props.actions.changeControlType(key)
 	}
 
@@ -41,8 +41,8 @@ class Tool extends React.Component {
 		return (
 			<div className="editor-tools">
 				{
-					tool.map(({ key, name, icon, activeFun }, i) => {
-						let active = activeFun? activeFun.bind(this)(): false
+					tool.map(({ key, name, icon, onActive }, i) => {
+						let active = onActive? onActive.bind(this)(): false
 						return (
 							<a
 								key={i}

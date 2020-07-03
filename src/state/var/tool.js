@@ -3,15 +3,10 @@ const tool = [
 		key:  'select',
 		name: '选择',
 		icon: '2D',
-		activeFun() {
+		onActive() {
 			let { type } = this.props.Config.Control
 			return type === 'select'
 		}
-	},
-	{
-		key:  'route',
-		name: '路径',
-		icon: ''
 	},
 	{
 		key:  'rect',
@@ -24,12 +19,12 @@ const tool = [
 		icon: 'circle'
 	},
 	{
-		key:  'pen',
-		name: '钢笔',
+		key:  'closePath',
+		name: '闭合路径',
 		icon: 'pen',
-		activeFun() {
+		onActive() {
 			let { type } = this.props.Config.Control
-			return type === 'pen'
+			return type === 'closePath'
 		}
 	},
 	{

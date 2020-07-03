@@ -43,7 +43,6 @@ class Canvas extends React.Component {
 		let { actions } = this.props
 		this._helper  = null
 		this.$CurNode = null
-		alert('cancel')
 		actions.selectNode(null)
 	}
 	// 渲染节点
@@ -164,7 +163,6 @@ class Canvas extends React.Component {
 		this.setState({ dbclick })
 	}
 	editPathClose = () => {
-		debugger
 		this.setState({ editPathStatus: false })
 	}
 	render() {
@@ -185,21 +183,24 @@ class Canvas extends React.Component {
 						{
 							!editPathStatus? selected: null
 						}
-						<ellipse
-							ref="hhh"
-							cx={0} cy={0} rx={4} ry={4}
-							fill="none"
-							stroke="#000"
-							strokeWidth="2"
-							vectorEffect="non-scaling-stroke"
-							strokeDasharray="none"
-						></ellipse>
+						{
+							/*<ellipse
+								ref="hhh"
+								title="辅助定位测试专用"
+								cx={0} cy={0} rx={4} ry={4}
+								fill="none"
+								stroke="#000"
+								strokeWidth="2"
+								vectorEffect="non-scaling-stroke"
+								strokeDasharray="none"
+							></ellipse>*/
+						}
 					</svg>
 					{
-						type === 'pen'? <DrawAdd />: null
+						type === 'closePath'? <DrawAdd />: null
 					}
 					{
-						editPathStatus? <DrawEdit pathEditCloseFun={this.editPathClose} />: null
+						editPathStatus? <DrawEdit onFinish={this.editPathClose} />: null
 					}
 				</div>
 				{

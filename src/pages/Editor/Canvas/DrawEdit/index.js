@@ -6,7 +6,7 @@ import * as actions from 'actions'
 import { getAngle, pointRotate } from '@utils/transform'
 import { mergePos } from '../utils'
 
-import './index.less'
+// import './index.less'
 
 var cursorMap = {
 
@@ -16,7 +16,7 @@ class DrawEdit extends React.Component {
 	constructor(props) {
 		super(props)
 		let { Config } = props,
-			{ ShortcutKey, CurNode }  = Config,
+			{ ShortcutKey, CurNode } = Config,
 			path     = {},
 			fragment = []
 		if (CurNode) {
@@ -54,14 +54,14 @@ class DrawEdit extends React.Component {
 		if (!complete) return
 		let { path } = this.state,
 			layout   = this.getLayout(),
-			{ actions, Config, pathEditCloseFun } = this.props,
+			{ actions, Config, onFinish } = this.props,
 			{ CurNode } = Config
 
 		Object.assign(CurNode, { path })
 		Object.assign(CurNode.layout, layout)
 		actions.updateNode(CurNode)
 		this.setState({ complete: false })
-		pathEditCloseFun(false)
+		onFinish()
 		// actions.changeControlType('')
 	}
 	pathRotate(path, rotate, cx, cy) {
